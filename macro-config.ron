@@ -1,0 +1,41 @@
+
+(
+    barman: (
+        freeze_key_code: 19, //Global freeze, all macros
+        freeze_key_state: "press",
+        reload_key_code: 20, //reload all macros
+        reload_key_state: "press",
+        shutdown_key_code: 21, //quit the whole program, all process are killed
+        shutdown_key_state: "press",
+
+    ),
+    keybinds: [
+        (
+            sub_keybinds: [
+                (
+                    key_code: 17,
+                    key_state: "press",
+                ),
+                (
+                    key_code: 18,
+                    key_state: "press",
+                )
+            ],
+            adr_name: "test",
+        ),
+        (
+            sub_keybinds: [
+                (
+                    key_code: 31,
+                    key_state: "press",
+                ),
+                (
+                    key_code: 32,
+                    key_state: "press",
+                ),
+            ],
+            adr_name: "19",
+        )
+    ],
+
+)

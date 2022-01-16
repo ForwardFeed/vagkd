@@ -1,0 +1,8 @@
+#Rust compilated stuff
+**/target
+target/
+Cargo.lock
+**/*.rs.bk
+
+#IDE stuff
+.idea
