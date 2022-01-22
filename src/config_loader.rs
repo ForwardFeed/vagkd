@@ -32,6 +32,7 @@ pub struct CfgSubKeybind {
 pub struct CfgKeybind {
     pub(crate) sub_keybinds: Vec<CfgSubKeybind>,//
     pub(crate) adr_name: String,
+    pub(crate) timer_treshold: i64,
 }
 
 //this is a final unified struct that will splitted in piece after in the macro_decompositor

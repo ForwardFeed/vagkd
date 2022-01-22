@@ -36,7 +36,6 @@ pub fn start(config: CfgSubKeybind, manager_bus: Arc<Mutex<bool>>, barman_bus: A
             buffer_iterator+=1;
         }
         if cfg.key_matching(current.key_code, current.key_value){
-            println!("{}",config.key_code);
             *manager_bus.lock().unwrap() = true;
         }
     }

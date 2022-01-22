@@ -22,19 +22,21 @@
                 )
             ],
             adr_name: "test",
+            timer_treshold: 1000,
         ),
         (
             sub_keybinds: [
                 (
-                    key_code: 31,
+                    key_code: 17,
                     key_state: "press",
                 ),
                 (
-                    key_code: 32,
+                    key_code: 18,
                     key_state: "press",
                 ),
             ],
-            adr_name: "19",
+            adr_name: "test2",
+            timer_treshold: 5000,
         )
     ],
 
