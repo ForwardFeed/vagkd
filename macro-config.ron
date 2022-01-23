@@ -1,6 +1,7 @@
 
 (
     barman: (
+        event_path: "/dev/input/event3",
         freeze_key_code: 19, //Global freeze, all macros
         freeze_key_state: "press",
         reload_key_code: 20, //reload all macros

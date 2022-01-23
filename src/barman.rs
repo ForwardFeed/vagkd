@@ -10,6 +10,7 @@ use crate::key_matching::{KeyMatching};
 use crate::config_loader;
 
 pub struct Barman {
+    event_file: String,
     freeze: Box<dyn KeyMatching>,
     reload: Box<dyn KeyMatching>,
     shutdown: Box<dyn KeyMatching>,
@@ -22,8 +23,8 @@ pub struct Barman {
 impl Barman {
 
     //i call it barman because it's the guy who serve every thread
-    pub fn start(mut self, event_file: &str) -> bool {//true mean reload, false mean quit
-        let mut file = Self::open_event_file(event_file);
+    pub fn start(mut self) -> bool {//true mean reload, false mean quit
+        let mut file = Self::open_event_file(self.event_file.clone());
         let mut buffer = [0; 24];
         loop {
             file.read(&mut buffer[..]).unwrap();
@@ -107,7 +108,7 @@ impl Barman {
         bus[self.buffer_iterator]=self.current;
 
     }
-    fn open_event_file(event_file: &str) -> File {
+    fn open_event_file(event_file: String) -> File {
         let file = File::open(event_file);
         match file {
             Ok(file) => return file,
@@ -119,6 +120,7 @@ impl Barman {
 
 pub fn new(config: config_loader::CfgBarman, bus: Arc<RwLock<Vec<BusKey>>>) -> Barman {
     Barman {
+        event_file: config.event_path,
         freeze: key_matching::new(config.freeze_key_code, config.freeze_key_state),
         reload: key_matching::new(config.reload_key_code, config.reload_key_state),
         shutdown: key_matching::new(config.shutdown_key_code, config.shutdown_key_state),

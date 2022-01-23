@@ -12,6 +12,7 @@ pub struct GeneralParameters {
 //So this act like a safe net, just don't forget the key you put as a red button
 #[derive(Clone, Debug, Deserialize)]
 pub struct CfgBarman {
+    pub(crate) event_path: String,
     pub(crate)freeze_key_code: u16, //Global freeze, all macro
     pub(crate)freeze_key_state: String,
     pub(crate)reload_key_code: u16, //reload all macros

@@ -22,7 +22,7 @@ pub fn start(config: Config){//TODO make error handling
     });
 
     //lets launch the Barman
-    barman::new(barman, barman_coms).start("/dev/input/event3");
+    barman::new(barman, barman_coms).start();
 }
 
 
