@@ -1,5 +1,6 @@
+use std::fs::File;
+use ron::de::from_reader;
 use serde::Deserialize;
-use ron::from_str;
 
 //This will be for general parameters of the program not macro specific
 // ### to much of a hassle i'll forget about it for now ###
@@ -47,14 +48,15 @@ pub struct Config {
 
 
 //i could have worked to make this config loader not cracking itself when something is wrong but rather skip it, more user friendly you know
-pub fn new() -> Config {
-    const CONFIG_MACRO_FILE: &str = include_str!("../macro-config.ron");
-    let config: Config = match from_str(CONFIG_MACRO_FILE) {
+pub fn new(config_file: &str) -> Config {
+
+    let f = File::open(&config_file).expect("Failed opening file");
+    return  match from_reader(f) {
         Ok(x) => x,
         Err(e) => {
             println!("Failed to load config: {}", e);
+
             std::process::exit(1);
         }
     };
-    return config;
 }

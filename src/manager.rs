@@ -1,23 +1,19 @@
 use std::sync::{Arc, RwLock, Mutex};
-use crate::internal_coms::{BusKey,Manager2KeybindsComs};
-use crate::config_loader::{CfgSubKeybind, CfgBarman, CfgKeybind};
+use crate::internal_coms::{BusKey};
+use crate::config_loader::{CfgKeybind};
 use crate::{internal_coms, subkeybind};
 use std::thread;
-use std::thread::JoinHandle;
-use self::timer::Guard;
 
 extern crate timer;
 extern crate chrono;
 
 /*
-this struct will hold all sub_keybinds handle, communications channel and timer
+this struct will hold communications channel between the manager and the subkeybind workers and the matching timer
  */
 
 struct ManagerWorkSpace{
     //need the coms channel
     coms: Arc<Mutex<bool>>,
-    //put the handle for a future use one day?
-    handle: JoinHandle<()>,
     //put a timer
     timer: timer::Timer,
     //put the timer guard, to cancel at any time
@@ -27,10 +23,9 @@ struct ManagerWorkSpace{
 }
 
 impl ManagerWorkSpace{
-    pub fn new(coms: Arc<Mutex<bool>>, handle: JoinHandle<()> ) ->ManagerWorkSpace{
+    pub fn new(coms: Arc<Mutex<bool>> ) ->ManagerWorkSpace{
         ManagerWorkSpace{
             coms,
-            handle,
             timer: timer::Timer::new(),
             guard: None,
             signal: Arc::new(Mutex::new(false)),
@@ -46,13 +41,14 @@ pub fn new(config: CfgKeybind, master_bus: Arc<RwLock<Vec<BusKey>>>){
     let mut sub_keybind_management = vec![];
     config.sub_keybinds.into_iter().for_each(|config|{
         let arc_link_master = master_bus.clone();
-        let arc_link_subkeybind = internal_coms::Manager2KeybindsComs::new().generate_arc_link();
+        let arc_link_subkeybind = internal_coms::ManagerKeybindsComs::new().generate_arc_link();
         let arc_link_manager = arc_link_subkeybind.clone();
         let name = format!("sub_keybinds{}_{}", config.key_code, config.key_state);
-        let handle = thread::Builder::new().name(name).spawn(move || {
+
+        thread::Builder::new().name(name).spawn(move || {
             subkeybind::start(config, arc_link_subkeybind.clone(), arc_link_master)
             }).unwrap();
-        sub_keybind_management.push(ManagerWorkSpace::new(arc_link_manager, handle))
+        sub_keybind_management.push(ManagerWorkSpace::new(arc_link_manager))
     });
     let mut are_all_keylistener_matched: u8;
     let treshold = config.timer_treshold.clone();
@@ -89,7 +85,7 @@ pub fn new(config: CfgKeybind, master_bus: Arc<RwLock<Vec<BusKey>>>){
     }
 }
 fn turn_all_signal_to_false(vec: &mut Vec<ManagerWorkSpace>){
-    vec.iter_mut().for_each(|mut lock|{
+    vec.iter_mut().for_each(|lock|{
         *lock.signal.lock().unwrap() = false;
     })
 }

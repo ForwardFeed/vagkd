@@ -1,9 +1,7 @@
 use crate::internal_coms::BusKey;
 use std::sync::{RwLock, Arc};
-use std::{thread, time};
 use std::fs::File;
 use std::io::Read;
-use crate::config_loader::CfgBarman;
 use std::process::exit;
 use crate::key_matching;
 use crate::key_matching::{KeyMatching};
@@ -109,10 +107,11 @@ impl Barman {
 
     }
     fn open_event_file(event_file: String) -> File {
+
         let file = File::open(event_file);
         match file {
             Ok(file) => return file,
-            Err(e) => panic!("Error while looking for event file, {}", e),
+            Err(e) => panic!("Error while opening event file : {}", e),
         };
     }
 

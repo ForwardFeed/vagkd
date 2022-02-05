@@ -1,17 +1,17 @@
 use std::sync::{Arc, RwLock, Mutex};
-use crate::internal_coms::{BusKey,Manager2KeybindsComs};
+use crate::internal_coms::{BusKey};
 use crate::config_loader::CfgSubKeybind;
 use crate::key_matching;
 
 pub fn start(config: CfgSubKeybind, manager_bus: Arc<Mutex<bool>>, barman_bus: Arc<RwLock<Vec<BusKey>>>) {
     let cfg = key_matching::new(config.key_code, config.key_state);
-    let mut current = BusKey::new();
+    let mut _current = BusKey::new();
     let mut mode :u8 = 255;
     let mut buffer_iterator: usize = 0;
     loop {
         match barman_bus.try_read() {
             Ok(bus) => {
-                current=bus[buffer_iterator];
+                _current=bus[buffer_iterator];
             }
             Err(_) => {
                 continue;
@@ -23,7 +23,7 @@ pub fn start(config: CfgSubKeybind, manager_bus: Arc<Mutex<bool>>, barman_bus: A
         okay, let me be clear, this system is complex for nothing, i just like it
 
          */
-        if (current.special^mode)!=0 {
+        if (_current.special^mode)!=0 {
             continue;
             //later i should check the freeze moment or other messages
 
@@ -35,7 +35,7 @@ pub fn start(config: CfgSubKeybind, manager_bus: Arc<Mutex<bool>>, barman_bus: A
         else{
             buffer_iterator+=1;
         }
-        if cfg.key_matching(current.key_code, current.key_value){
+        if cfg.key_matching(_current.key_code, _current.key_value){
             *manager_bus.lock().unwrap() = true;
         }
     }

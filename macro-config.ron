@@ -1,4 +1,3 @@
-
 (
     barman: (
         event_path: "/dev/input/event3",

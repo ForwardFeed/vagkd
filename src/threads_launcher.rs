@@ -1,9 +1,7 @@
 
-use crate::internal_coms::{BarmanComs, BusKey};
 use crate::{internal_coms, barman, manager};
 use std::thread;
-use std::sync::{Arc, RwLock};
-use crate::config_loader::{CfgBarman, CfgKeybind, Config};
+use crate::config_loader::{Config};
 
 /**
     Takes the config and launch every thread who will then intercommunicate
@@ -18,7 +16,7 @@ pub fn start(config: Config){//TODO make error handling
     keybinds.into_iter().for_each(|keybind|{
         let arc_link = barman_coms_for_keybinds.clone();
         let name = format!("Keybind_manager_{}", keybind.adr_name);
-        thread::Builder::new().name(name).spawn(move || {  manager::new(keybind, arc_link) });
+        thread::Builder::new().name(name).spawn(move || {  manager::new(keybind, arc_link) }).unwrap();
     });
 
     //lets launch the Barman

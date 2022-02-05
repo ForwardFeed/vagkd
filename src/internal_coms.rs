@@ -48,16 +48,16 @@ impl BarmanComs {
 }
 
 //Commmunication between the manager of a macro and the submacros
-//for each subthread the manager will share an ear (this bool) will be a matching or not situation
-pub struct Manager2KeybindsComs{
-    Manager2KeybindsComs: Arc<Mutex<bool>>
+//for each subthread the manager will share an ear (this bool) who will hear a matching or not situation
+pub struct ManagerKeybindsComs {
+    manager_keybinds_coms: Arc<Mutex<bool>>
 }
 
-impl Manager2KeybindsComs {
-    pub fn new()->Manager2KeybindsComs{
-        Manager2KeybindsComs{
-            Manager2KeybindsComs: Arc::new(Mutex::new( false))
+impl ManagerKeybindsComs {
+    pub fn new()-> ManagerKeybindsComs {
+        ManagerKeybindsComs {
+            manager_keybinds_coms: Arc::new(Mutex::new( false))
         }
     }
-    pub fn generate_arc_link(&self)->Arc<Mutex<bool>> {return  Arc::clone(&self.Manager2KeybindsComs)}
+    pub fn generate_arc_link(&self)->Arc<Mutex<bool>> {return  Arc::clone(&self.manager_keybinds_coms)}
 }
