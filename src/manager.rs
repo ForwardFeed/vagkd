@@ -51,7 +51,7 @@ pub fn new(config: CfgKeybind, master_bus: Arc<RwLock<Vec<BusKey>>>){
         sub_keybind_management.push(ManagerWorkSpace::new(arc_link_manager))
     });
     let mut are_all_keylistener_matched: u8;
-    let treshold = config.timer_treshold.clone();
+    let threshold = config.timer_threshold.clone();
     loop {
         //check all coms
         sub_keybind_management.iter_mut().for_each(|mut workspace|{
@@ -65,7 +65,7 @@ pub fn new(config: CfgKeybind, master_bus: Arc<RwLock<Vec<BusKey>>>){
                 }
                 let lock_for_timer= workspace.signal.clone();
                 //we drop the previous timer because in case of the person trigger the button before the timing end;
-                workspace.guard = Some(workspace.timer.schedule_with_delay(chrono::Duration::milliseconds(treshold),  move ||{
+                workspace.guard = Some(workspace.timer.schedule_with_delay(chrono::Duration::milliseconds(threshold as i64), move ||{
                     *lock_for_timer.lock().unwrap()=false;
                 }))
             }

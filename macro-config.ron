@@ -13,30 +13,31 @@
         (
             sub_keybinds: [
                 (
-                    key_code: 17,
-                    key_state: "press",
+                    key_code: 16,
+                    key_state: "longpress",
+                    longpress_threshold: 1500,
                 ),
                 (
-                    key_code: 18,
+                    key_code: 17,
                     key_state: "press",
                 )
             ],
             adr_name: "test",
-            timer_treshold: 1000,
+            timer_threshold: 5000,
         ),
         (
             sub_keybinds: [
                 (
-                    key_code: 17,
+                    key_code: 31,
                     key_state: "press",
                 ),
                 (
-                    key_code: 18,
+                    key_code: 32,
                     key_state: "press",
                 ),
             ],
             adr_name: "test2",
-            timer_treshold: 5000,
+            timer_threshold: 5000,
         )
     ],
 

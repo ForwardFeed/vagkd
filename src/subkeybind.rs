@@ -4,7 +4,7 @@ use crate::config_loader::CfgSubKeybind;
 use crate::key_matching;
 
 pub fn start(config: CfgSubKeybind, manager_bus: Arc<Mutex<bool>>, barman_bus: Arc<RwLock<Vec<BusKey>>>) {
-    let cfg = key_matching::new(config.key_code, config.key_state);
+    let mut cfg = key_matching::new(config.key_code, config.key_state, config.longpress_threshold);
     let mut _current = BusKey::new();
     let mut mode :u8 = 255;
     let mut buffer_iterator: usize = 0;

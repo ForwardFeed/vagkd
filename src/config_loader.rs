@@ -27,6 +27,8 @@ pub struct CfgBarman {
 pub struct CfgSubKeybind {
     pub(crate) key_code: u16,
     pub(crate) key_state: String,
+    #[serde(skip)]
+    pub(crate) longpress_threshold: Option<u64>
 }
 
 // this will be a collection of couple keycode and keystate
@@ -34,7 +36,7 @@ pub struct CfgSubKeybind {
 pub struct CfgKeybind {
     pub(crate) sub_keybinds: Vec<CfgSubKeybind>,//
     pub(crate) adr_name: String,
-    pub(crate) timer_treshold: i64,
+    pub(crate) timer_threshold: u64,
 }
 
 //this is a final unified struct that will splitted in piece after in the macro_decompositor
