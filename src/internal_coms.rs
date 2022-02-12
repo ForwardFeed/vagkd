@@ -1,7 +1,7 @@
 //ITT communications between the eventProducteur/eventListener and , will hold the generation of communications elements
 
 
-use std::sync::{RwLock, Arc, Mutex};
+use std::sync::{RwLock, Arc};
 /*
 key_code: will be the kernel keycode, between 1 and 255 i think
 key_value: will be the event associated with the keypress
@@ -45,19 +45,4 @@ impl BarmanComs {
     pub fn generate_arc_link(&self)-> Arc<RwLock<Vec<BusKey>>>{
         return Arc::clone(&self.bus_key);//fuck i can't pass the reference of a smart pointer
     }
-}
-
-//Commmunication between the manager of a macro and the submacros
-//for each subthread the manager will share an ear (this bool) who will hear a matching or not situation
-pub struct ManagerKeybindsComs {
-    manager_keybinds_coms: Arc<Mutex<bool>>
-}
-
-impl ManagerKeybindsComs {
-    pub fn new()-> ManagerKeybindsComs {
-        ManagerKeybindsComs {
-            manager_keybinds_coms: Arc::new(Mutex::new( false))
-        }
-    }
-    pub fn generate_arc_link(&self)->Arc<Mutex<bool>> {return  Arc::clone(&self.manager_keybinds_coms)}
 }

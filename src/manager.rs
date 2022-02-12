@@ -1,19 +1,19 @@
 use std::sync::{Arc, RwLock, Mutex};
 use crate::internal_coms::{BusKey};
 use crate::config_loader::{CfgKeybind};
-use crate::{internal_coms, subkeybind};
-use std::thread;
+use crate::key_matching;
+use crate::key_matching::KeyMatching;
 
 extern crate timer;
 extern crate chrono;
 
 /*
-this struct will hold communications channel between the manager and the subkeybind workers and the matching timer
+this struct will now keep track of matching of each sub keybind
  */
 
 struct ManagerWorkSpace{
-    //need the coms channel
-    coms: Arc<Mutex<bool>>,
+    //the subkeybind worker
+    sub_keybind: Box<dyn KeyMatching>,
     //put a timer
     timer: timer::Timer,
     //put the timer guard, to cancel at any time
@@ -23,9 +23,9 @@ struct ManagerWorkSpace{
 }
 
 impl ManagerWorkSpace{
-    pub fn new(coms: Arc<Mutex<bool>> ) ->ManagerWorkSpace{
+    pub fn new(sub_keybind: Box<dyn KeyMatching>) ->ManagerWorkSpace{
         ManagerWorkSpace{
-            coms,
+            sub_keybind,
             timer: timer::Timer::new(),
             guard: None,
             signal: Arc::new(Mutex::new(false)),
@@ -37,35 +37,63 @@ impl ManagerWorkSpace{
 
 
 
-pub fn new(config: CfgKeybind, master_bus: Arc<RwLock<Vec<BusKey>>>){
+pub fn new(config: CfgKeybind, master_bus: Arc<RwLock<Vec<BusKey>>>) {
     let mut sub_keybind_management = vec![];
-    config.sub_keybinds.into_iter().for_each(|config|{
-        let arc_link_master = master_bus.clone();
-        let arc_link_subkeybind = internal_coms::ManagerKeybindsComs::new().generate_arc_link();
-        let arc_link_manager = arc_link_subkeybind.clone();
-        let name = format!("sub_keybinds{}_{}", config.key_code, config.key_state);
-
-        thread::Builder::new().name(name).spawn(move || {
-            subkeybind::start(config, arc_link_subkeybind.clone(), arc_link_master)
-            }).unwrap();
-        sub_keybind_management.push(ManagerWorkSpace::new(arc_link_manager))
+    let cfg_theshhold = config.timer_threshold;
+    config.sub_keybinds.into_iter().for_each(|config| {
+        sub_keybind_management.push(
+            ManagerWorkSpace::new(
+            key_matching::new(config.key_code, config.key_state, config.longpress_threshold)
+            )
+        );
     });
+
+
+    let mut _current = BusKey::new();
+    let mut mode: u8 = 255;
+    let mut buffer_iterator: usize = 0;
+
     let mut are_all_keylistener_matched: u8;
-    let threshold = config.timer_threshold.clone();
+
     loop {
-        //check all coms
-        sub_keybind_management.iter_mut().for_each(|mut workspace|{
-            if *workspace.coms.lock().unwrap() == true{
+        match master_bus.try_read() {
+            Ok(bus) => {
+                _current = bus[buffer_iterator];
+            }
+            Err(_) => {
+                continue;
+            }
+        };
+        /*
+        this check is uhh
+        if the mode is A, value 0: if it read a value that isn't the mode B, value 255, it will just loop until the mode is A, value 0.
+        okay, let me be clear, this system is complex for nothing, i just like it
+
+         */
+        if (_current.special ^ mode) != 0 {
+            continue;
+            //later i should check the freeze moment or other messages
+        }
+        if buffer_iterator == 15 { //15 being the last size of buffer so it need to loop to 0 again
+            buffer_iterator = 0;
+            mode = !mode;
+        } else {
+            buffer_iterator += 1;
+        }
+        //It's now time to try to match each keybinds
+        sub_keybind_management.iter_mut().for_each(|workspace| {
+            //Does this subkeybind is matched?
+            if workspace.sub_keybind.key_matching(_current.key_code, _current.key_value) {
                 //if one sub_keybind call a matched set the whole to true
                 *workspace.signal.lock().unwrap()=true;
-                *workspace.coms.lock().unwrap()=false;//the signal has been acknowledged set
+                //we reset the timer
                 match &workspace.guard{
                     Some(p) => drop(p),
                     _ => {}
                 }
                 let lock_for_timer= workspace.signal.clone();
-                //we drop the previous timer because in case of the person trigger the button before the timing end;
-                workspace.guard = Some(workspace.timer.schedule_with_delay(chrono::Duration::milliseconds(threshold as i64), move ||{
+                //we reset the timer
+                workspace.guard = Some(workspace.timer.schedule_with_delay(chrono::Duration::milliseconds(cfg_theshhold.clone() as i64), move ||{
                     *lock_for_timer.lock().unwrap()=false;
                 }))
             }
@@ -80,12 +108,15 @@ pub fn new(config: CfgKeybind, master_bus: Arc<RwLock<Vec<BusKey>>>){
         });
         if are_all_keylistener_matched == counts_of_sub_keybinds as u8 {
             println!("{}", config.adr_name);
-            turn_all_signal_to_false(&mut sub_keybind_management);
+            //Reset now all timer and set all to false it's perfectly fine we got a match
+            sub_keybind_management.iter_mut().for_each(|workspace| {
+                match &workspace.guard{
+                    Some(p) => drop(p),
+                    _ => {}
+                }
+                *workspace.signal.lock().unwrap()=false;
+            });
         }
+
     }
-}
-fn turn_all_signal_to_false(vec: &mut Vec<ManagerWorkSpace>){
-    vec.iter_mut().for_each(|lock|{
-        *lock.signal.lock().unwrap() = false;
-    })
 }

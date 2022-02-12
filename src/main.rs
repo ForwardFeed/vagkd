@@ -4,7 +4,6 @@ mod barman;
 mod threads_launcher;
 mod key_matching;
 mod manager;
-mod subkeybind;
 
 extern crate clap;
 use clap::{Arg, App};
