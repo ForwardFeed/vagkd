@@ -27,8 +27,10 @@ pub struct CfgBarman {
 pub struct CfgSubKeybind {
     pub(crate) key_code: u16,
     pub(crate) key_state: String,
-    #[serde(skip)]
-    pub(crate) longpress_threshold: Option<u64>
+    #[serde(default = "default_longpress_threshold")]
+    pub(crate) longpress_threshold: u64,
+    #[serde(default = "default_count_press")]
+    pub(crate) count_press: u16
 }
 
 // this will be a collection of couple keycode and keystate
@@ -61,4 +63,17 @@ pub fn new(config_file: &str) -> Config {
             std::process::exit(1);
         }
     };
+}
+
+/*
+Default value for some fields because Serde works like that
+ */
+
+fn default_longpress_threshold() -> u64{
+    //default value
+    return 1500
+}
+
+fn default_count_press() -> u16{
+    return 3
 }

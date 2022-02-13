@@ -3,6 +3,7 @@
 
 use std::sync::{RwLock, Arc};
 /*
+TODO FIX THIS COMMENT IT IS NOT ACCURATE ANYMORE
 key_code: will be the kernel keycode, between 1 and 255 i think
 key_value: will be the event associated with the keypress
 special: will indicate some meta code, should be considered as a signal

@@ -120,9 +120,9 @@ impl Barman {
 pub fn new(config: config_loader::CfgBarman, bus: Arc<RwLock<Vec<BusKey>>>) -> Barman {
     Barman {
         event_file: config.event_path,
-        freeze: key_matching::new(config.freeze_key_code, config.freeze_key_state, Some(0)),
-        reload: key_matching::new(config.reload_key_code, config.reload_key_state, Some(0)),
-        shutdown: key_matching::new(config.shutdown_key_code, config.shutdown_key_state, Some(0)),
+        freeze: key_matching::new(config.freeze_key_code, config.freeze_key_state, 0, 0),
+        reload: key_matching::new(config.reload_key_code, config.reload_key_state, 0,0),
+        shutdown: key_matching::new(config.shutdown_key_code, config.shutdown_key_state, 0,0),
         current: BusKey::new(),
         bus,
         is_freeze: false,

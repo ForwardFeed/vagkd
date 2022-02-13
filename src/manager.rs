@@ -43,7 +43,7 @@ pub fn new(config: CfgKeybind, master_bus: Arc<RwLock<Vec<BusKey>>>) {
     config.sub_keybinds.into_iter().for_each(|config| {
         sub_keybind_management.push(
             ManagerWorkSpace::new(
-            key_matching::new(config.key_code, config.key_state, config.longpress_threshold)
+            key_matching::new(config.key_code, config.key_state, config.longpress_threshold, config.count_press)
             )
         );
     });

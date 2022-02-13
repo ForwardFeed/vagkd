@@ -66,6 +66,72 @@ impl KeyMatching for LongPress{
         return false
     }
 }
+
+/*
+This structure will handle keymatching for spam pressing of one key during a specific time
+ */
+struct SpamPress{
+    key_code: u16,
+    timer_threshold: Duration,
+    start_timer: Instant,
+    cfg_count_press: u16,
+    current_count_press: u16,
+}
+
+impl SpamPress{
+    fn new(key_code: u16, threshold: u64, cfg_count_press: u16) ->SpamPress{
+        SpamPress {
+            key_code,
+            timer_threshold: Duration::from_millis(threshold),
+            start_timer: Instant::now(),
+            cfg_count_press,
+            current_count_press: 0,
+        }
+    }
+}
+
+impl KeyMatching for SpamPress {
+    fn key_matching(&mut self, key_code: u16, key_value: u32) -> bool {
+        if self.key_code == key_code{
+            //we press down the keyboard key
+            if key_value == 1{
+                //If it's the first count down start the timer
+                if self.current_count_press == 0 {
+                    self.start_timer = Instant::now();
+                    //start the increment
+                    self.current_count_press+=1;
+                    //println!("init: {}", self.cfg_count_press.clone())
+                }
+                else {
+                    //simply increment
+                    self.current_count_press+=1;
+                    //println!("current: {}", self.current_count_press.clone());
+                }
+            }
+            //when we finally release we check if the count has been reached or not
+            if key_value==0{
+                //Before anything just calc if we pressed into enough time?
+                let now = Instant::now();
+                // just check if the time elapsed between the first press and the second press is more than the time we wanted
+                if now.duration_since(self.start_timer) > self.timer_threshold {
+                    //reset time baby?
+                    self.current_count_press = 0;
+                    return false;
+                }
+                //did we reached the number of count?
+                //the >= here is to prevent a bug if someone put zero press in the config file
+                if self.current_count_press >= self.cfg_count_press{
+                    //yes we did, we just released the last one
+                    self.current_count_press = 0;
+                    return true;
+                }
+                return false;
+            }
+            //if the key_value is 2 we don't care
+        }
+        return false
+    }
+}
 /*
 to explain in short, this function
 in our config file we have humans understandable key_states such as release, press, hold and tons of other options
@@ -83,7 +149,7 @@ pub(crate) fn trans_key_state_to_key_value(cfg_key_state: String)->u32{//u32 bec
     /*
 
     for the simple struct example, the function will simply match the key code sent by the kernel and the one converted
-    but for other keymatching more complex it may not matter
+    but for other keymatching more complex it may not matter so i will simply put 69 because i'm a dank memer >:D
     */
 
     return match cfg_key_state.as_str() {
@@ -93,7 +159,8 @@ pub(crate) fn trans_key_state_to_key_value(cfg_key_state: String)->u32{//u32 bec
         "<" => 0,
         "hold" => 2,
         "_" => 2,
-        "longpress" => 2,
+        "longpress" => 69,
+        "spampress" => 69,
         _ => 1,
     }
 }
@@ -109,6 +176,8 @@ pub(crate) fn trans_key_state_to_key_function(cfg_key_state: String)->u8{
         "<" => 1,
         "hold" => 1,
         "_" => 1,
+        "longpress" => 2,
+        "spampress" => 3,
         _ => 1,
     }
 }
@@ -118,12 +187,14 @@ pub(crate) fn trans_key_state_to_key_function(cfg_key_state: String)->u8{
 /*
 This is were in function of what you linked previously you will generate the right implementation
  */
-pub fn new(cfg_key_code: u16, cfg_key_state: String, cfg_longpress_threshold: Option<u64>) -> Box<dyn KeyMatching>{
+pub fn new(cfg_key_code: u16, cfg_key_state: String, cfg_longpress_threshold: u64, cfg_count_press: u16) -> Box<dyn KeyMatching>{
     let cfg_key_value = trans_key_state_to_key_value(cfg_key_state.clone());
     let code= trans_key_state_to_key_function(cfg_key_state);
+
     return match code{
         1 => Box::new(Simple{key_code: cfg_key_code, key_value: cfg_key_value}),
-        2 => Box::new(LongPress::new(cfg_key_code, cfg_longpress_threshold.unwrap())),
+        2 => Box::new(LongPress::new(cfg_key_code, cfg_longpress_threshold)),
+        3 => Box::new(SpamPress::new(cfg_key_code, cfg_longpress_threshold, cfg_count_press)),
         _ => Box::new(Simple{key_code: cfg_key_code, key_value: cfg_key_value}),//better make a panic tbh
     }
 }

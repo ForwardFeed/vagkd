@@ -15,11 +15,16 @@
                 (
                     key_code: 16,
                     key_state: "longpress",
+
                     longpress_threshold: 1500,
+                    count_press: 3,
                 ),
                 (
                     key_code: 17,
                     key_state: "press",
+
+                    longpress_threshold:1500,
+                    count_press: 3,
                 )
             ],
             adr_name: "test",
@@ -30,15 +35,35 @@
                 (
                     key_code: 31,
                     key_state: "press",
+
+                    longpress_threshold: 1500,
+                    count_press: 3,
                 ),
                 (
                     key_code: 32,
                     key_state: "press",
+
+                    longpress_threshold: 1500,
+                    count_press: 3,
                 ),
             ],
             adr_name: "test2",
             timer_threshold: 5000,
-        )
+        ),
+        (
+            sub_keybinds: [
+                (
+                    key_code: 33,
+                    key_state: "spampress",
+
+                    longpress_threshold: 1500,
+                    count_press: 5,
+                ),
+
+            ],
+            adr_name: "test3",
+            timer_threshold: 5000,
+        ),
     ],
 
 )
