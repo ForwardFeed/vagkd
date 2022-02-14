@@ -2,7 +2,7 @@
 For (Linux) Very Advanced Global Keybind (daemon) 
 
 ### What is this?
-This is a keybinder or a macro daemon for linux . it react from keys you pressed on your keyboard.
+This is a keybinder or a macro daemon for linux . it react from keys you pressed on your keyboard but i plan to add a lot more control in the future.
 
 ### functionnalities ?
 - Unlike pre existing linux keybinders this one is based on the linux kernel and should work on any display server (hello wayland users), downside is it requires some privileges since it behave like a keylogger.
@@ -10,5 +10,5 @@ This is a keybinder or a macro daemon for linux . it react from keys you pressed
 
 ### TODO list
 - make a tutorial on how to use it
-- rethink the whole barman parameters and stuff like that
 - includes more **advanced** matching pattern
+- make a wrapper for others languages such as python for ease of use
