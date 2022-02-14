@@ -1,8 +1,6 @@
-use std::sync::mpsc::{channel, sync_channel};
-use std::sync::{Arc, Mutex};
+use std::sync::mpsc::{channel};
 use crate::{internal_coms, barman, manager};
 use std::thread;
-use ron::Value::String;
 use crate::config_loader::{Config};
 
 /**

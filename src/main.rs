@@ -44,7 +44,7 @@ fn main() {
     loop{
         match receiver.try_recv(){
             Ok(x) => {outputting(output_mode, x)  },
-            Err(e) => {}
+            Err(..) => {}
         }
     }
 }
