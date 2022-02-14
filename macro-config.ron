@@ -1,13 +1,6 @@
 (
     barman: (
         event_path: "/dev/input/event3",
-        freeze_key_code: 19, //Global freeze, all macros
-        freeze_key_state: {"keybind_type": "press"},
-        reload_key_code: 20, //reload all macros
-        reload_key_state: {"keybind_type": "press"},
-        shutdown_key_code: 21, //quit the whole program, all process are killed
-        shutdown_key_state: {"keybind_type": "press"},
-
     ),
     keybinds: [
         /*
@@ -26,15 +19,11 @@
         (
             sub_keybinds: [
                 (
-                    key_code: 16,
-                    key_state: {"keybind_type": "longpress", "press_duration" : 1500},
-                ),
-                (
                     key_code: 17,
                     key_state: { "keybind_type": "press"},
                 )
             ],
-            adr_name: "test",
+            id: 1,
             timer_threshold: 5000,
         ),
         (
@@ -49,19 +38,29 @@
 
                 ),
             ],
-            adr_name: "test2",
+            id: 2,
             timer_threshold: 5000,
         ),
         (
             sub_keybinds: [
                 (
                     key_code: 33,
-                    key_state: {"keybind_type": "spampress", "spam_press_time_span" : 750, "repetition": 5},
+                    key_state: {"keybind_type": "spampress", "spam_press_time_span" : 7500, "repetition": 5},
 
                 ),
 
             ],
-            adr_name: "test3",
+            id: 3,
+            timer_threshold: 5000,
+        ),
+        (
+            sub_keybinds: [
+                (
+                    key_code: 16,
+                    key_state: {"keybind_type": "longpress", "press_duration" : 1500},
+                ),
+            ],
+            id: 4,
             timer_threshold: 5000,
         ),
     ],

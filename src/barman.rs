@@ -2,19 +2,12 @@ use crate::internal_coms::BusKey;
 use std::sync::{RwLock, Arc};
 use std::fs::File;
 use std::io::Read;
-use std::process::exit;
-use crate::key_matching;
-use crate::key_matching::{KeyMatching};
 use crate::config_loader;
 
 pub struct Barman {
     event_file: String,
-    freeze: Box<dyn KeyMatching>,
-    reload: Box<dyn KeyMatching>,
-    shutdown: Box<dyn KeyMatching>,
     current: BusKey,
     bus: Arc<RwLock<Vec<BusKey>>>,
-    is_freeze: bool,
     buffer_iterator: usize,
     mode: u8,
 }
@@ -36,49 +29,11 @@ impl Barman {
             if (key_t | key_c) == 4 || (key_t | key_c) == 0 {
                 continue;
             }
-            self.current.key_code= key_c; self.current.key_value=key_v;
-            // is related to the macro manager? //i retrieved the freeze handler to a better function
-            let rm = self.is_related_to_manager();
-            match rm {
-                0 => (), // do nothing
-                2 => {
-                    self.new_bus_com();
-                    return true
-                }, // will return the code 5 which mean reload everything please
-                3 => {
-                    self.new_bus_com();
-                },
-                4 => {
-                    self.new_bus_com();
-                }
-                _ => panic!("output in is_related_to_manager return not valid, found {}, expected 0, 1 or 2", rm),
-            }
+            self.current.key_code = key_c;
+            self.current.key_value = key_v;
+
             self.new_bus_com();
         }
-    }
-    fn is_related_to_manager(&mut self) -> u8 {
-
-        //is shutdown?
-        if self.shutdown.key_matching(self.current.key_code, self.current.key_value) {
-            exit(8008135)//why am i so retarded?
-        }
-        // is time to reload?
-        if  self.reload.key_matching(self.current.key_code, self.current.key_value){
-            self.current.special=2;
-            return 2;
-        }
-        if self.freeze.key_matching(self.current.key_code, self.current.key_value) {
-            return if self.is_freeze {
-                self.is_freeze = false;
-                self.current.special = 3;
-                3
-            } else {
-                self.is_freeze = true;
-                self.current.special = 4;
-                4
-            }
-        }
-        return 0
     }
 
     //okay once the function new_bus_com has been lauched all thread will jump on it to eat all the data.
@@ -120,12 +75,8 @@ impl Barman {
 pub fn new(config: config_loader::CfgBarman, bus: Arc<RwLock<Vec<BusKey>>>) -> Barman {
     Barman {
         event_file: config.event_path,
-        freeze: key_matching::new(config.freeze_key_code, config.freeze_key_state),
-        reload: key_matching::new(config.reload_key_code, config.reload_key_state),
-        shutdown: key_matching::new(config.shutdown_key_code, config.shutdown_key_state),
         current: BusKey::new(),
         bus,
-        is_freeze: false,
         buffer_iterator: 15,
         mode: 0,
     }

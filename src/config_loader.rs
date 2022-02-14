@@ -18,17 +18,10 @@ pub enum KeyStates{
     Simple{keybind_type: String},
 }
 
-//The Master Keybind, very important to me when doing macros, having your computer going crazy is funny but a fearfull experience.
-//So this act like a safe net, just don't forget the key you put as a red button
 #[derive(Clone, Debug, Deserialize)]
 pub struct CfgBarman {
     pub(crate)event_path: String,
-    pub(crate)freeze_key_code: u16, //Global freeze, all macro
-    pub(crate)freeze_key_state: KeyStates,
-    pub(crate)reload_key_code: u16, //reload all macros
-    pub(crate)reload_key_state: KeyStates,
-    pub(crate)shutdown_key_code: u16, //quit the whole program, all process are killed
-    pub(crate)shutdown_key_state: KeyStates,
+
 }
 
 
@@ -43,7 +36,7 @@ pub struct CfgSubKeybind {
 #[derive(Clone, Debug, Deserialize)]
 pub struct CfgKeybind {
     pub(crate) sub_keybinds: Vec<CfgSubKeybind>,//
-    pub(crate) adr_name: String,
+    pub(crate) id: u32,
     pub(crate) timer_threshold: u64,
 }
 
