@@ -9,28 +9,34 @@ pub struct GeneralParameters {
     pub(crate) buffer_size_for_events: u16, //might be useful, might be removed, who knows
 }*/
 
+
+#[derive(Deserialize, Debug, Clone)]
+#[serde(untagged)]
+pub enum KeyStates{
+    SpamPress{keybind_type: String, spam_press_time_span: u64, repetition:u16 },
+    LongPress{keybind_type: String, press_duration: u64},
+    Simple{keybind_type: String},
+}
+
 //The Master Keybind, very important to me when doing macros, having your computer going crazy is funny but a fearfull experience.
 //So this act like a safe net, just don't forget the key you put as a red button
 #[derive(Clone, Debug, Deserialize)]
 pub struct CfgBarman {
-    pub(crate) event_path: String,
+    pub(crate)event_path: String,
     pub(crate)freeze_key_code: u16, //Global freeze, all macro
-    pub(crate)freeze_key_state: String,
+    pub(crate)freeze_key_state: KeyStates,
     pub(crate)reload_key_code: u16, //reload all macros
-    pub(crate)reload_key_state: String,
+    pub(crate)reload_key_state: KeyStates,
     pub(crate)shutdown_key_code: u16, //quit the whole program, all process are killed
-    pub(crate)shutdown_key_state: String,
+    pub(crate)shutdown_key_state: KeyStates,
 }
+
 
 //this struct is just for the simple keycode and keystate, the keystate is comparable to a keyfunction
 #[derive(Clone, Debug, Deserialize)]
 pub struct CfgSubKeybind {
     pub(crate) key_code: u16,
-    pub(crate) key_state: String,
-    #[serde(default = "default_longpress_threshold")]
-    pub(crate) longpress_threshold: u64,
-    #[serde(default = "default_count_press")]
-    pub(crate) count_press: u16
+    pub(crate) key_state: KeyStates,
 }
 
 // this will be a collection of couple keycode and keystate
@@ -41,7 +47,7 @@ pub struct CfgKeybind {
     pub(crate) timer_threshold: u64,
 }
 
-//this is a final unified struct that will splitted in piece after in the macro_decompositor
+//this is a final unified struct that will splitted in piece after in the threadlauncher
 #[derive(Clone, Debug, Deserialize)]
 pub struct Config {
     //pub(crate) general_parameters: GeneralParameters,
@@ -59,21 +65,7 @@ pub fn new(config_file: &str) -> Config {
         Ok(x) => x,
         Err(e) => {
             println!("Failed to load config: {}", e);
-
             std::process::exit(1);
         }
     };
-}
-
-/*
-Default value for some fields because Serde works like that
- */
-
-fn default_longpress_threshold() -> u64{
-    //default value
-    return 1500
-}
-
-fn default_count_press() -> u16{
-    return 3
 }

@@ -2,29 +2,36 @@
     barman: (
         event_path: "/dev/input/event3",
         freeze_key_code: 19, //Global freeze, all macros
-        freeze_key_state: "press",
+        freeze_key_state: {"keybind_type": "press"},
         reload_key_code: 20, //reload all macros
-        reload_key_state: "press",
+        reload_key_state: {"keybind_type": "press"},
         shutdown_key_code: 21, //quit the whole program, all process are killed
-        shutdown_key_state: "press",
+        shutdown_key_state: {"keybind_type": "press"},
 
     ),
     keybinds: [
+        /*
+            sub_keybinds: [
+                (
+                    "key_code" is your key code, when i press "q" on a classic qwerty keyboard the keycode associated is usually 16
+                    "key_state" as multiple possibility
+                        "press" or ">" : just a regular press on it, nothing really fancy
+                        "release" or "<" : when you put your finger out your key
+                        "hold" or "_" : when you keep your finger on it TODO replace it with the following
+                        "long_press [integer between 0 and 18446744073709551615]" : press the key for like [X] milliseconds
+                        "spam_press [integer between 0 and 65535] [integer between 0 and 18446744073709551615]" :
+                            spam the key [X] time between [Y] seconds
+                ),
+        */
         (
             sub_keybinds: [
                 (
                     key_code: 16,
-                    key_state: "longpress",
-
-                    longpress_threshold: 1500,
-                    count_press: 3,
+                    key_state: {"keybind_type": "longpress", "press_duration" : 1500},
                 ),
                 (
                     key_code: 17,
-                    key_state: "press",
-
-                    longpress_threshold:1500,
-                    count_press: 3,
+                    key_state: { "keybind_type": "press"},
                 )
             ],
             adr_name: "test",
@@ -34,17 +41,12 @@
             sub_keybinds: [
                 (
                     key_code: 31,
-                    key_state: "press",
-
-                    longpress_threshold: 1500,
-                    count_press: 3,
+                    key_state: { "keybind_type": "hold"},
                 ),
                 (
                     key_code: 32,
-                    key_state: "press",
+                    key_state: { "keybind_type": "release"},
 
-                    longpress_threshold: 1500,
-                    count_press: 3,
                 ),
             ],
             adr_name: "test2",
@@ -54,10 +56,8 @@
             sub_keybinds: [
                 (
                     key_code: 33,
-                    key_state: "spampress",
+                    key_state: {"keybind_type": "spampress", "spam_press_time_span" : 750, "repetition": 5},
 
-                    longpress_threshold: 1500,
-                    count_press: 5,
                 ),
 
             ],

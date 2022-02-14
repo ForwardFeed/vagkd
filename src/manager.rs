@@ -41,9 +41,10 @@ pub fn new(config: CfgKeybind, master_bus: Arc<RwLock<Vec<BusKey>>>) {
     let mut sub_keybind_management = vec![];
     let cfg_theshhold = config.timer_threshold;
     config.sub_keybinds.into_iter().for_each(|config| {
+
         sub_keybind_management.push(
             ManagerWorkSpace::new(
-            key_matching::new(config.key_code, config.key_state, config.longpress_threshold, config.count_press)
+            key_matching::new(config.key_code, config.key_state)
             )
         );
     });
@@ -115,6 +116,8 @@ pub fn new(config: CfgKeybind, master_bus: Arc<RwLock<Vec<BusKey>>>) {
                     _ => {}
                 }
                 *workspace.signal.lock().unwrap()=false;
+                //some keybinds needs to be reset to prevent light bug
+                workspace.sub_keybind.reset();
             });
         }
 

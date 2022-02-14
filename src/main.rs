@@ -6,6 +6,8 @@ mod key_matching;
 mod manager;
 
 extern crate clap;
+extern crate core;
+
 use clap::{Arg, App};
 
 fn main() {
