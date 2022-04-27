@@ -3,66 +3,38 @@
         event_path: "/dev/input/event3",
     ),
     keybinds: [
-        /*
-            sub_keybinds: [
-                (
-                    "key_code" is your key code, when i press "q" on a classic qwerty keyboard the keycode associated is usually 16
-                    "key_state" as multiple possibility
-                        "press" or ">" : just a regular press on it, nothing really fancy
-                        "release" or "<" : when you put your finger out your key
-                        "hold" or "_" : when you keep your finger on it TODO replace it with the following
-                        "long_press [integer between 0 and 18446744073709551615]" : press the key for like [X] milliseconds
-                        "spam_press [integer between 0 and 65535] [integer between 0 and 18446744073709551615]" :
-                            spam the key [X] time between [Y] seconds
-                ),
-        */
         (
             sub_keybinds: [
                 (
-                    key_code: 17,
-                    key_state: { "keybind_type": "press"},
-                )
+                    key_code: 16,
+                    key_state: (
+                        keybind_type: "press",
+                    ),
+                ),
             ],
             id: 1,
-            timer_threshold: 5000,
+            timer_threshold: 1500,
         ),
         (
             sub_keybinds: [
                 (
-                    key_code: 31,
-                    key_state: { "keybind_type": "hold"},
+                    key_code: 71,
+                    key_state: (
+                        keybind_type: "longpress",
+                        press_duration: 750,
+                    ),
                 ),
                 (
-                    key_code: 32,
-                    key_state: { "keybind_type": "release"},
-
+                    key_code: 72,
+                    key_state: (
+                        keybind_type: "spampress",
+                        spam_press_time_span: 2000,
+                        repetition: 4,
+                    ),
                 ),
             ],
             id: 2,
             timer_threshold: 5000,
         ),
-        (
-            sub_keybinds: [
-                (
-                    key_code: 33,
-                    key_state: {"keybind_type": "spampress", "spam_press_time_span" : 7500, "repetition": 5},
-
-                ),
-
-            ],
-            id: 3,
-            timer_threshold: 5000,
-        ),
-        (
-            sub_keybinds: [
-                (
-                    key_code: 16,
-                    key_state: {"keybind_type": "longpress", "press_duration" : 1500},
-                ),
-            ],
-            id: 4,
-            timer_threshold: 5000,
-        ),
     ],
-
 )

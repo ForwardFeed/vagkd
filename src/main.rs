@@ -4,10 +4,11 @@ mod barman;
 mod threads_launcher;
 mod key_matching;
 mod manager;
+mod generate;
 
 extern crate clap;
-extern crate core;
 
+use std::process::exit;
 use clap::{Arg, App};
 
 fn main() {
@@ -26,15 +27,25 @@ fn main() {
             .short("c")
             .long("config")
             .value_name("FILE")
-            .help("Sets a custom config file, default macro-config.ron")
+            .help("Sets a custom config file, if not specified: macro-config.ron")
             .takes_value(true))
         .arg(Arg::with_name("output")
             .short("o")
             .long("output")
             .help("Sets a mode of output, default stdout, possible: stdout, name-pipe")
+            .default_value("stdout")
             .takes_value(true))
+        .arg(Arg::with_name("generate")
+            .short("g")
+            .long("generate")
+            .help("Generate a custom config file")
+            .takes_value(false))
         .get_matches();
 
+    //check if we're in a generate mode
+    if matches.is_present("generate"){
+        generate::new().start();
+    }
     let config_file = matches.value_of("config").unwrap_or("macro-config.ron");
 
     let config = config_loader::new(config_file);

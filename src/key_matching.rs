@@ -83,10 +83,9 @@ impl KeyMatching for LongPress{
             if key_value == 1{
                 self.start_timer=Instant::now();
             }
-            /* it's else 2 a kernel hold down or a release
-               Here is a tricky part, this system cannot hold very precise time length
-               because at each "kernel tic" this function will be invoked and kernel tics aren't that frequent.
-               But to fix this i would need a total rewrite
+            /* it's else 2 a kernel hold down or 0 a release
+               because at each "driver tic" this function will be invoked and driver tics aren't that frequent i don't know?
+               But to fix this i would need a total rewrite for not so much reactivity added
              */
             else{
                 let now = Instant::now();
