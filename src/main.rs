@@ -8,7 +8,6 @@ mod generate;
 
 extern crate clap;
 
-use std::process::exit;
 use clap::{Arg, App};
 
 fn main() {
