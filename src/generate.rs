@@ -9,7 +9,6 @@ use ron::ser::{PrettyConfig, to_string_pretty};
 use crate::config_loader;
 
 pub struct Generate{
-    id : u32,
     event_file_path: std::string::String,
 }
 pub fn new() -> Generate {
@@ -23,7 +22,7 @@ pub fn new() -> Generate {
     let event_file = File::open(event_file_input.clone());
     /* just check we can read the file */
     match event_file {
-        Ok(..) => return Generate{id : 1,event_file_path: event_file_input},
+        Ok(..) => return Generate{event_file_path: event_file_input},
         Err(e) => panic!("Error while opening event file ({}) : {}",event_file_input, e),
     };
 }
@@ -37,7 +36,7 @@ impl Generate {
         loop{
             println!("Creation of a Keybind");
             keybinds.push(self.create_keybinds());
-            self.print_flush("Would you like to continue to create Keybinds to this configuration file? (Y/n)");
+            self.print_flush("Would you like to continue to create Keybinds to this configuration file? (Y/n) :");
             let mut input = std::string::String::new();
             stdin().read_line(&mut input).unwrap();
             input.pop();
@@ -55,12 +54,24 @@ impl Generate {
 
     fn create_keybinds(&mut self) -> config_loader::CfgKeybind{
         let mut sub_keybinds: Vec<config_loader::CfgSubKeybind> = vec![];
-        let id: u32;
+        let name : std::string::String;
         let timer_threshold: u64;
 
-        /* we need to make general parameters of this keybind */
-        id = self.id;
-        self.id=self.id+1;
+        /* we need to get the name of the  macro */
+        loop {
+            self.print_flush("What should be the name of this keybind? : ");
+            let mut name_input = std::string::String::new();
+            stdin().read_line(&mut name_input).unwrap();
+            name_input.pop();
+            match name_input.parse() {
+                Ok(x) => {
+                    name = x;
+                    break;
+                },
+                Err(..) => ()
+            }
+        }
+
 
         loop{
             self.print_flush("Please enter the time threshold for this keybind (in milliseconds) :");
@@ -86,7 +97,7 @@ impl Generate {
                 _ => break
             }
         }
-        return config_loader::CfgKeybind{sub_keybinds ,id, timer_threshold};
+        return config_loader::CfgKeybind{sub_keybinds ,name, timer_threshold};
 
     }
 

@@ -1,17 +1,12 @@
-//ITT communications between the eventProducteur/eventListener and , will hold the generation of communications elements
+/*
+    Communications between the eventProducer/eventListener and , will hold the generation of communications elements
+    the Producer is the barman and the managers are the listeners
+    i rather call listenning the consomming because in term of memory management the data isn't consummed, it's cloned
+ */
 
 
 use std::sync::{RwLock, Arc};
-/*
-TODO FIX THIS COMMENT IT IS NOT ACCURATE ANYMORE
-key_code: will be the kernel keycode, between 1 and 255 i think
-key_value: will be the event associated with the keypress
-special: will indicate some meta code, should be considered as a signal
-    0 => the data is outdated
-    1 => the data is good
-    3 => mean freeze
-    4 => mean unfreeze
- */
+
 #[derive(Clone, Copy, Debug)]
 pub struct BusKey{
     pub(crate) key_code: u16,
@@ -29,8 +24,9 @@ impl BusKey {
 }
 
 
-//smart pointer for inter-thread coms with a RwLock to share data
-
+/*
+     smart pointers (ARC) for inter-thread coms with a RwLock to share data
+*/
 pub struct BarmanComs {
     bus_key: Arc<RwLock<Vec<BusKey>>>
 }

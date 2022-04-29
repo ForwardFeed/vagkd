@@ -6,24 +6,17 @@
         (
             sub_keybinds: [
                 (
-                    key_code: 16,
+                    key_code: 72,
                     key_state: (
                         keybind_type: "press",
                     ),
                 ),
             ],
-            id: 1,
+            name: "simple click",
             timer_threshold: 1500,
         ),
         (
             sub_keybinds: [
-                (
-                    key_code: 71,
-                    key_state: (
-                        keybind_type: "longpress",
-                        press_duration: 750,
-                    ),
-                ),
                 (
                     key_code: 72,
                     key_state: (
@@ -32,8 +25,15 @@
                         repetition: 4,
                     ),
                 ),
+                (
+                    key_code: 71,
+                    key_state: (
+                        keybind_type: "longpress",
+                        press_duration: 750,
+                    ),
+                ),
             ],
-            id: 2,
+            name: "a bit more complex",
             timer_threshold: 5000,
         ),
     ],

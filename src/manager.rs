@@ -1,5 +1,4 @@
 use std::sync::{Arc, RwLock, Mutex};
-use std::sync::mpsc::Sender;
 use crate::internal_coms::{BusKey};
 use crate::config_loader::{CfgKeybind};
 use crate::key_matching;
@@ -38,7 +37,7 @@ impl ManagerWorkSpace{
 
 
 
-pub fn new(config: CfgKeybind, master_bus: Arc<RwLock<Vec<BusKey>>>, tx: Sender<u32>) {
+pub fn new(config: CfgKeybind, master_bus: Arc<RwLock<Vec<BusKey>>>) {
 
     let mut sub_keybind_management = vec![];
     let cfg_theshhold = config.timer_threshold;
@@ -110,7 +109,8 @@ pub fn new(config: CfgKeybind, master_bus: Arc<RwLock<Vec<BusKey>>>, tx: Sender<
             }
         });
         if are_all_keylistener_matched == counts_of_sub_keybinds as u8 {
-            tx.send(config.id.clone()).unwrap();
+            // Just stdout it and we're done
+            println!("{}", config.name.clone());
             //Reset now all timer and set all to false it's perfectly fine we got a match
             sub_keybind_management.iter_mut().for_each(|workspace| {
                 match &workspace.guard{

@@ -14,7 +14,7 @@ pub struct Barman {
 impl Barman {
 
     //i call it barman because it's the guy who serve every thread
-    pub fn start(mut self) -> bool {//true mean reload, false mean quit
+    pub fn start(mut self) {//true mean reload, false mean quit
         let mut file = Self::open_event_file(self.event_file.clone());
         let mut buffer = [0; 24];
         loop {

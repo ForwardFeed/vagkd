@@ -36,7 +36,7 @@ pub struct CfgSubKeybind {
 #[derive(Clone, Debug, Deserialize,Serialize)]
 pub struct CfgKeybind {
     pub(crate) sub_keybinds: Vec<CfgSubKeybind>,//
-    pub(crate) id: u32,
+    pub(crate) name: String,
     pub(crate) timer_threshold: u64,
 }
 
