@@ -6,7 +6,7 @@
         (
             sub_keybinds: [
                 (
-                    key_code: 72,
+                    key_code: 73,
                     key_state: (
                         keybind_type: "press",
                     ),
@@ -34,7 +34,7 @@
                 ),
             ],
             name: "a bit more complex",
-            timer_threshold: 5000,
+            timer_threshold: 1500,
         ),
     ],
 )

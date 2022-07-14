@@ -1,12 +1,14 @@
 mod config_loader;
-mod internal_coms;
-mod barman;
-mod threads_launcher;
 mod key_matching;
 mod manager;
 mod generate;
+mod main_loop;
+mod extractor;
+mod input_event;
+//mod fuckyou;
 
 extern crate clap;
+extern crate core;
 
 use clap::{Arg, App};
 
@@ -42,8 +44,8 @@ fn main() {
     let config_file = matches.value_of("config").unwrap_or("macro-config.ron");
 
     let config = config_loader::new(config_file);
-    threads_launcher::start(config);
-
+    //threads_launcher::start(config);
+    main_loop::start(config);
 
 }
 

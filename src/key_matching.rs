@@ -1,14 +1,17 @@
+use std::ops::Sub;
+use std::time::Duration;
+use crate::input_event::Input_Event;
 
 //this trait will in function of the object make the correct matching it's a bit hard to understand even to myself tbh
 pub trait KeyMatching{
-    fn key_matching(&mut self, key_code: u16, key_value: u32) -> bool;
+    fn key_matching(&mut self, last_event: Input_Event) -> bool;
     fn reset(&mut self);
 }
 
 
 struct Simple{
     key_code: u16,
-    key_value: u32,
+    key_value: i32,
 }
 
 impl Simple {
@@ -28,8 +31,8 @@ impl Simple {
 
 //simply compare the config with what kernel say, really simple
 impl KeyMatching for Simple{
-    fn key_matching(&mut self, key_code: u16, key_value: u32) -> bool {
-        if self.key_code == key_code && self.key_value == key_value{
+    fn key_matching(&mut self, last_event: Input_Event) -> bool {
+        if self.key_code == last_event.key_code && self.key_value == last_event.key_value{
             return true
         }
         return false
@@ -44,13 +47,13 @@ This Struct will be be for press that have to be X time long before matching
 The idea is when a 1 is matched it init the
  */
 
-use std::time::{Duration, Instant};
 use crate::config_loader::KeyStates;
 
 struct LongPress{
+    has_started: bool,
     key_code: u16,
-    press_duration: Duration,
-    start_timer: Instant,
+    press_duration: std::time::Duration,
+    start_timer: std::time::Duration, //UNIX EPOCH
 }
 
 /*
@@ -69,39 +72,48 @@ impl LongPress {
         };
 
         LongPress {
+            has_started: false,
             key_code,
             press_duration: Duration::from_millis(press_duration),
-            start_timer: Instant::now()
+            start_timer: Duration::new(0,0),
         }
     }
 }
 
 impl KeyMatching for LongPress{
-    fn key_matching(&mut self, key_code: u16, key_value: u32) -> bool {
-        if self.key_code == key_code{
+    fn key_matching(&mut self, last_event: Input_Event) -> bool {
+        if self.key_code == last_event.key_code{
+            //the key is released
+            if last_event.key_value == 0{
+                self.has_started=false;
+            }
             //we press down the keyboard key
-            if key_value == 1{
-                self.start_timer=Instant::now();
-            }
-            /* it's else 2 a kernel hold down or 0 a release
-               because at each "driver tic" this function will be invoked and driver tics aren't that frequent i don't know?
-               But to fix this i would need a total rewrite for not so much reactivity added
-             */
-            else{
-                let now = Instant::now();
+            else if self.has_started{
                 // just check if the time elapsed between the first press and the second press is more than the time we wanted
-                if now.duration_since(self.start_timer) > self.press_duration {
-                    return true;
-                }
-                //the press wasn't long enough
-                return false;
+                let delta = match last_event.timestamp.checked_sub(self.start_timer){
+                    Some(x) => x,
+                    None => return false //what?
+                };
+                return match self.press_duration.checked_sub(delta){
+                    Some(_) => {
+                        false
+                    },
+                    None => {
+                        self.has_started=false;
+                        true
+                    }
+                };
+            }else{
+                self.has_started=true;
+                self.start_timer=last_event.timestamp;
             }
+
         }
         return false
     }
 
     fn reset(&mut self) {
-        self.start_timer = Instant::now();
+        self.start_timer= std::time::Duration::new(0,0);
     }
 }
 
@@ -111,7 +123,7 @@ This structure will handle keymatching for spam pressing of one key during a spe
 struct SpamPress{
     key_code: u16,
     spam_press_time_span: Duration,
-    start_timer: Instant,
+    start_timer: std::time::Duration,
     cfg_count_press: u16,
     current_count_press: u16,
 }
@@ -133,8 +145,8 @@ impl SpamPress{
 
         SpamPress {
             key_code,
-            spam_press_time_span: Duration::from_millis(spam_press_time_span),
-            start_timer: Instant::now(),
+            spam_press_time_span: std::time::Duration::from_millis(spam_press_time_span),
+            start_timer: std::time::Duration::new(0,0),
             cfg_count_press: repetition,
             current_count_press: 0,
         }
@@ -142,13 +154,13 @@ impl SpamPress{
 }
 
 impl KeyMatching for SpamPress {
-    fn key_matching(&mut self, key_code: u16, key_value: u32) -> bool {
-        if self.key_code == key_code{
+    fn key_matching(&mut self, last_event: Input_Event) -> bool {
+        if self.key_code == last_event.key_code{
             //we press down the keyboard key
-            if key_value == 1{
+            if last_event.key_value == 1{
                 //If it's the first count down start the timer
                 if self.current_count_press == 0 {
-                    self.start_timer = Instant::now();
+                    self.start_timer = last_event.timestamp;
                     //start the increment
                     self.current_count_press+=1;
                     //println!("init: {}", self.cfg_count_press.clone())
@@ -160,11 +172,10 @@ impl KeyMatching for SpamPress {
                 }
             }
             //when we finally release we check if the count has been reached or not
-            if key_value==0{
+            if last_event.key_value==0{
                 //Before anything just calc if we pressed into enough time?
-                let now = Instant::now();
                 // just check if the time elapsed between the first press and the second press is more than the time we wanted
-                if now.duration_since(self.start_timer) > self.spam_press_time_span {
+                if last_event.timestamp-self.start_timer > self.spam_press_time_span {
                     //reset time baby?
                     self.current_count_press = 0;
                     return false;
@@ -184,12 +195,12 @@ impl KeyMatching for SpamPress {
     }
 
     fn reset(&mut self) {
-        //nothing to do
+        self.start_timer= std::time::Duration::new(0,0);
     }
 }
 
 /*
-
+  
  */
 pub fn new(cfg_key_code: u16, cfg_key_state: KeyStates) -> Box<dyn KeyMatching>{
 
