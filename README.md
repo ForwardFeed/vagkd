@@ -17,6 +17,9 @@ So if you do space + Return, you can do Return + space it will work.
 - Matching keybindings will be outputed to stdout.
 
 ### TODO list
-- make a tutorial on how to use it
-- includes more **advanced** matching pattern
-- make a wrapper for others languages such as python for ease of use
+- [ ] making a tutorial on how to use it
+- [ ] GUI
+- [ ] modify config
+- [ ] more **advanced** matching pattern
+- [ ] ordering keybinds 
+- [ ] make a wrapper for others languages such as python for ease of use

@@ -100,7 +100,6 @@ impl KeyMatching for LongPress{
         }else{
             if self.has_started{
                 if self.check_time(last_event.timestamp){
-                    self.start_timer=Instant::now();
                     true
                 }else{
                     false
