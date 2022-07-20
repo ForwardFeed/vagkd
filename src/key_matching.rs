@@ -1,11 +1,10 @@
-use std::ops::Sub;
-use std::time::Duration;
-use crate::input_event::Input_Event;
+use std::time;
+use std::time::{Duration, Instant};
+use crate::input_event::InputEvent;
 
 //this trait will in function of the object make the correct matching it's a bit hard to understand even to myself tbh
 pub trait KeyMatching{
-    fn key_matching(&mut self, last_event: Input_Event) -> bool;
-    fn reset(&mut self);
+    fn key_matching(&mut self, last_event: InputEvent) -> bool;
 }
 
 
@@ -31,20 +30,15 @@ impl Simple {
 
 //simply compare the config with what kernel say, really simple
 impl KeyMatching for Simple{
-    fn key_matching(&mut self, last_event: Input_Event) -> bool {
+    fn key_matching(&mut self, last_event: InputEvent) -> bool {
         if self.key_code == last_event.key_code && self.key_value == last_event.key_value{
             return true
         }
         return false
     }
-
-    fn reset(&mut self) {
-        //nothing to do
-    }
 }
 /*
 This Struct will be be for press that have to be X time long before matching
-The idea is when a 1 is matched it init the
  */
 
 use crate::config_loader::KeyStates;
@@ -53,12 +47,8 @@ struct LongPress{
     has_started: bool,
     key_code: u16,
     press_duration: std::time::Duration,
-    start_timer: std::time::Duration, //UNIX EPOCH
+    start_timer: time::Instant
 }
-
-/*
-i don't use the keybind_type for now maybe in the future?
- */
 
 impl LongPress {
     fn new(key_code: u16, keybind_type: String, press_duration: u64) ->LongPress{
@@ -75,45 +65,50 @@ impl LongPress {
             has_started: false,
             key_code,
             press_duration: Duration::from_millis(press_duration),
-            start_timer: Duration::new(0,0),
+            start_timer: Instant::now(),
+        }
+    }
+
+    fn check_time(&mut self, timestamp: Instant) -> bool{
+
+        let delta = timestamp.duration_since(self.start_timer);
+        return match delta.checked_sub(self.press_duration) {
+            None => { false }
+            Some(_) => { true }
         }
     }
 }
 
 impl KeyMatching for LongPress{
-    fn key_matching(&mut self, last_event: Input_Event) -> bool {
-        if self.key_code == last_event.key_code{
-            //the key is released
-            if last_event.key_value == 0{
-                self.has_started=false;
+    fn key_matching(&mut self, last_event: InputEvent) -> bool {
+        if last_event.key_code == self.key_code{
+            return match last_event.key_value {
+                0 => {
+                    self.has_started = false;
+                    false
+
+                },
+                1 =>{
+                    self.has_started = true;
+                    self.start_timer=  Instant::now();
+                    false
+                },
+                _ => {
+                     false
+                }
             }
-            //we press down the keyboard key
-            else if self.has_started{
-                // just check if the time elapsed between the first press and the second press is more than the time we wanted
-                let delta = match last_event.timestamp.checked_sub(self.start_timer){
-                    Some(x) => x,
-                    None => return false //what?
-                };
-                return match self.press_duration.checked_sub(delta){
-                    Some(_) => {
-                        false
-                    },
-                    None => {
-                        self.has_started=false;
-                        true
-                    }
-                };
+        }else{
+            if self.has_started{
+                if self.check_time(last_event.timestamp){
+                    self.start_timer=Instant::now();
+                    true
+                }else{
+                    false
+                }
             }else{
-                self.has_started=true;
-                self.start_timer=last_event.timestamp;
+                false
             }
-
         }
-        return false
-    }
-
-    fn reset(&mut self) {
-        self.start_timer= std::time::Duration::new(0,0);
     }
 }
 
@@ -123,7 +118,7 @@ This structure will handle keymatching for spam pressing of one key during a spe
 struct SpamPress{
     key_code: u16,
     spam_press_time_span: Duration,
-    start_timer: std::time::Duration,
+    start_timer: time::Instant,
     cfg_count_press: u16,
     current_count_press: u16,
 }
@@ -146,7 +141,7 @@ impl SpamPress{
         SpamPress {
             key_code,
             spam_press_time_span: std::time::Duration::from_millis(spam_press_time_span),
-            start_timer: std::time::Duration::new(0,0),
+            start_timer: time::Instant::now(),
             cfg_count_press: repetition,
             current_count_press: 0,
         }
@@ -154,7 +149,7 @@ impl SpamPress{
 }
 
 impl KeyMatching for SpamPress {
-    fn key_matching(&mut self, last_event: Input_Event) -> bool {
+    fn key_matching(&mut self, last_event: InputEvent) -> bool {
         if self.key_code == last_event.key_code{
             //we press down the keyboard key
             if last_event.key_value == 1{
@@ -192,10 +187,6 @@ impl KeyMatching for SpamPress {
             //if the key_value is 2 we don't care
         }
         return false
-    }
-
-    fn reset(&mut self) {
-        self.start_timer= std::time::Duration::new(0,0);
     }
 }
 

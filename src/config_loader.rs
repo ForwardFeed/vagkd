@@ -19,7 +19,7 @@ pub struct CfgBarman {
 
 #[derive(Deserialize, Debug, Clone,Serialize)]
 #[serde(untagged)]
-pub enum KeyStates{
+pub enum KeyStates{//Was really fun to do it but was it the simplest?
     SpamPress{keybind_type: String, spam_press_time_span: u64, repetition:u16 },
     LongPress{keybind_type: String, press_duration: u64},
     Simple{keybind_type: String},

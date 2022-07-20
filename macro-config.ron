@@ -6,11 +6,14 @@
         (
             sub_keybinds: [
                 (
-                    key_code: 73,
+                    key_code: 72,
                     key_state: (
-                        keybind_type: "press",
+                        keybind_type: "spampress",
+                        spam_press_time_span: 2000,
+                        repetition: 4,
                     ),
                 ),
+
             ],
             name: "simple click",
             timer_threshold: 1500,
@@ -18,11 +21,9 @@
         (
             sub_keybinds: [
                 (
-                    key_code: 72,
+                    key_code: 73,
                     key_state: (
-                        keybind_type: "spampress",
-                        spam_press_time_span: 2000,
-                        repetition: 4,
+                        keybind_type: "press",
                     ),
                 ),
                 (

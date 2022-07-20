@@ -5,7 +5,6 @@ mod generate;
 mod main_loop;
 mod extractor;
 mod input_event;
-//mod fuckyou;
 
 extern crate clap;
 extern crate core;
@@ -21,9 +20,9 @@ fn main() {
 
 
     let matches = App::new("vagk")
-        .version("U.w.U")
-        .author("Someone on internet x)")
-        .about("a global keybind daemon for Linux")
+        .version("1.0.0")
+        .author("ForwardFeel")
+        .about("a global keybind software for Linux")
         .arg(Arg::with_name("config")
             .short("c")
             .long("config")

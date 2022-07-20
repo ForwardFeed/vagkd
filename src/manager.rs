@@ -1,5 +1,4 @@
-use core::time;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use crate::config_loader::{CfgKeybind};
 use crate::{input_event, key_matching};
 use crate::key_matching::KeyMatching;
@@ -11,7 +10,7 @@ this struct will now keep track of matching of each sub keybind
 
 struct KeybindTrackers {
     //record the time
-    last_time_matched: Duration,
+    last_time_matched: Instant,
     //the keybinding worker
     keybind: Box<dyn KeyMatching>,
     //is the keybinding matched?
@@ -20,7 +19,7 @@ struct KeybindTrackers {
 
 impl KeybindTrackers {
     pub fn new(keybind: Box<dyn KeyMatching>) -> KeybindTrackers {
-        let last_matched = Duration::new(0, 0);
+        let last_matched = Instant::now();
         KeybindTrackers {
             keybind,
             last_time_matched: last_matched,
@@ -55,7 +54,7 @@ impl Manager {
         }
     }
 
-    pub fn try_match(&mut self, last_event: input_event::Input_Event) -> bool {
+    pub fn try_match(&mut self, last_event: input_event::InputEvent) -> bool {
         //we check if one of the keybind from the team has matched
         let mut has_one_matched = false;
         self.keybind_team.iter_mut().for_each(|mut keybind_tracker| {
@@ -71,21 +70,25 @@ impl Manager {
             return false
         }
         // I'll now pick each one, one by one and check if they matched in the time threshold
-        let mut has_none_overtimed = true;
+        let mut are_all_matched = true;
         let time_threshold = Duration::from_millis(self.cfg_threshold.clone());
         self.keybind_team.iter_mut().for_each(|mut keybind_tracker| {
-            if last_event.timestamp - keybind_tracker.last_time_matched > time_threshold  {
-                keybind_tracker.has_matched = false;
-                has_none_overtimed = false;
+            if keybind_tracker.has_matched {
+                if last_event.timestamp - keybind_tracker.last_time_matched > time_threshold  { //check if it's over time
+                    keybind_tracker.has_matched = false;
+                    are_all_matched = false;
+                }
+            }else {
+                are_all_matched=false;
             }
         });
-        return has_none_overtimed;
+        //put all as matched so there
+        if are_all_matched{
+            self.keybind_team.iter_mut().for_each(|mut keybind_tracker| {
+                keybind_tracker.has_matched=false;
+            })
+        }
+        return are_all_matched;
     }
 
-    pub fn reset_all(&mut self){
-        self.keybind_team.iter_mut().for_each(|mut keybind_tracker| {
-                keybind_tracker.keybind.reset();
-                 keybind_tracker.has_matched=false;
-        });
-    }
 }

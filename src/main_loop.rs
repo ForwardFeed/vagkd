@@ -1,4 +1,4 @@
-use crate::{extractor, manager, input_event};
+use crate::{extractor};
 use crate::config_loader::Config;
 use crate::manager::Manager;
 
@@ -14,9 +14,7 @@ pub fn start(config: Config){
         for manager in &mut managers{
             if manager.try_match(last_event.clone()){
                 println!("{}",manager.name);
-                manager.reset_all();
             }
         }
-
     }
 }
