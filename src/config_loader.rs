@@ -3,19 +3,12 @@ use ron::de::from_reader;
 use serde::{Deserialize,Serialize};
 
 //This will be for general parameters of the program not macro specific
-// ### to much of a hassle i'll forget about it for now ###
-/*#[derive(Copy, Debug, Deserialize)]
+//
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct GeneralParameters {
-    pub(crate) buffer_size_for_events: u16, //might be useful, might be removed, who knows
-}*/
-
-
-
-#[derive(Clone, Debug, Deserialize,Serialize)]
-pub struct CfgBarman {
     pub(crate)event_path: String,
-
 }
+
 
 #[derive(Deserialize, Debug, Clone,Serialize)]
 #[serde(untagged)]
@@ -44,7 +37,7 @@ pub struct CfgKeybind {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Config {
     //pub(crate) general_parameters: GeneralParameters,
-    pub(crate) barman: CfgBarman,
+    pub(crate) general_parameters: GeneralParameters,
     pub(crate) keybinds: Vec<CfgKeybind>,
 }
 

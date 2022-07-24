@@ -1,15 +1,17 @@
 mod config_loader;
 mod key_matching;
 mod manager;
-mod generate;
 mod main_loop;
 mod extractor;
 mod input_event;
+mod generate;
 
 extern crate clap;
 extern crate core;
 
+
 use clap::{Arg, App};
+use crate::generate::Generate;
 
 fn main() {
     /*
@@ -38,13 +40,14 @@ fn main() {
 
     //check if we're in a generate mode
     if matches.is_present("generate"){
-        generate::new().start();
+        Generate::new().start();
     }
-    let config_file = matches.value_of("config").unwrap_or("macro-config.ron");
+    else{
+        let config_file = matches.value_of("config").unwrap_or("macro-config.ron");
+        let config = config_loader::new(config_file);
+        main_loop::start(config);
+    }
 
-    let config = config_loader::new(config_file);
-    //threads_launcher::start(config);
-    main_loop::start(config);
 
 }
 
