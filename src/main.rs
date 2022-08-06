@@ -1,7 +1,7 @@
 mod config_loader;
 mod key_matching;
 mod manager;
-mod main_loop;
+mod main_loop;Here are
 mod extractor;
 mod input_event;
 mod generate;
@@ -23,7 +23,7 @@ fn main() {
 
     let matches = App::new("vagk")
         .version("1.0.0")
-        .author("ForwardFeel")
+        .author("ForwardFeed")
         .about("a global keybind software for Linux")
         .arg(Arg::with_name("config")
             .short("c")
