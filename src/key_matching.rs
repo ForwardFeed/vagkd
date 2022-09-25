@@ -1,9 +1,10 @@
 use std::time;
 use std::time::{Duration, Instant};
 use crate::input_event::InputEvent;
+use crate::config_loader::KeyStates;
 
 //this trait will in function of the object make the correct matching it's a bit hard to understand even to myself tbh
-pub trait KeyMatching{
+pub trait KeyMatching {
     fn key_matching(&mut self, last_event: InputEvent) -> bool;
 }
 
@@ -14,17 +15,8 @@ struct Simple{
 }
 
 impl Simple {
-    fn new(key_code: u16, keybind_type: String) -> Simple{
-        let key_bind_str = keybind_type.as_str();
-        return match key_bind_str{
-             "press" => Simple{key_code, key_value: 1},
-             ">" => Simple{key_code, key_value: 1},
-             "release" => Simple{key_code, key_value: 0},
-             "<" => Simple{key_code, key_value: 0},
-             "hold" => Simple{key_code, key_value: 2},
-             "_" => Simple{key_code, key_value: 2},
-            _ => panic!("Wrong keybind_type got : {} ", keybind_type)
-        };
+    fn new(key_code: u16, key_value: i32) -> Simple{
+        Simple{key_code, key_value}
     }
 }
 
@@ -37,11 +29,11 @@ impl KeyMatching for Simple{
         return false
     }
 }
+
+
 /*
 This Struct will be be for press that have to be X time long before matching
  */
-
-use crate::config_loader::KeyStates;
 
 struct LongPress{
     has_started: bool,
@@ -51,15 +43,8 @@ struct LongPress{
 }
 
 impl LongPress {
-    fn new(key_code: u16, keybind_type: String, press_duration: u64) ->LongPress{
+    fn new(key_code: u16, press_duration: u64) ->LongPress{
 
-        let key_bind_str = keybind_type.as_str();
-        match key_bind_str{
-            "longpress" => (),
-            "long-press" => (),
-            "long_press" => (),
-            _ => panic!("Wrong keybind_type expected \"longpress\" got : {} ", keybind_type)
-        };
 
         LongPress {
             has_started: false,
@@ -111,6 +96,7 @@ impl KeyMatching for LongPress{
     }
 }
 
+
 /*
 This structure will handle keymatching for spam pressing of one key during a specific time
  */
@@ -127,15 +113,7 @@ impl SpamPress{
     /*
     i don't use the keybind_type for now maybe in the future?
      */
-    fn new(key_code: u16, keybind_type: String, spam_press_time_span: u64, repetition: u16 ) ->SpamPress{
-
-        let key_bind_str = keybind_type.as_str();
-        match  key_bind_str {
-            "spampress" => (),
-            "spam-press" => (),
-            "spam_press" => (),
-            _ => panic!("Wrong keybind_type expected \"spampress\"  got : {} ", keybind_type)
-        }
+    fn new(key_code: u16, spam_press_time_span: u64, repetition: u16 ) ->SpamPress{
 
         SpamPress {
             key_code,
@@ -189,15 +167,16 @@ impl KeyMatching for SpamPress {
     }
 }
 
+
 /*
   
  */
 pub fn new(cfg_key_code: u16, cfg_key_state: KeyStates) -> Box<dyn KeyMatching>{
 
     match cfg_key_state {
-        KeyStates::Simple{keybind_type} => Box::new(Simple::new(cfg_key_code, keybind_type)),
-        KeyStates::LongPress{keybind_type,press_duration} => Box::new(LongPress::new(cfg_key_code,keybind_type, press_duration)),
-        KeyStates::SpamPress{keybind_type, spam_press_time_span, repetition} => Box::new(SpamPress::new(cfg_key_code,keybind_type,spam_press_time_span ,repetition)),
+        KeyStates::Simple{key_value} => Box::new(Simple::new(cfg_key_code, key_value)),
+        KeyStates::LongPress{press_duration} => Box::new(LongPress::new(cfg_key_code, press_duration)),
+        KeyStates::SpamPress{spam_press_time_span, repetition} => Box::new(SpamPress::new(cfg_key_code,spam_press_time_span ,repetition)),
     }
 
 }

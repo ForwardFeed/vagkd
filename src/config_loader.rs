@@ -1,6 +1,5 @@
 use std::fs::File;
-use ron::de::from_reader;
-use serde::{Deserialize,Serialize};
+use serde::{Deserialize, Serialize};
 
 //This will be for general parameters of the program not macro specific
 //
@@ -13,15 +12,16 @@ pub struct GeneralParameters {
 #[derive(Deserialize, Debug, Clone,Serialize)]
 #[serde(untagged)]
 pub enum KeyStates{//Was really fun to do it but was it the simplest?
-    SpamPress{keybind_type: String, spam_press_time_span: u64, repetition:u16 },
-    LongPress{keybind_type: String, press_duration: u64},
-    Simple{keybind_type: String},
+SpamPress{spam_press_time_span: u64, repetition:u16 },
+    LongPress{press_duration: u64},
+    Simple{key_value: i32},
 }
 
 //this struct is just for the simple keycode and keystate, the keystate is comparable to a keyfunction
 #[derive(Clone, Debug, Deserialize,Serialize)]
 pub struct CfgSubKeybind {
     pub(crate) key_code: u16,
+    pub(crate) keybind_type: String,
     pub(crate) key_state: KeyStates,
 }
 
@@ -36,22 +36,19 @@ pub struct CfgKeybind {
 //this is a final unified struct that will splitted in piece after in the threadlauncher
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Config {
-    //pub(crate) general_parameters: GeneralParameters,
     pub(crate) general_parameters: GeneralParameters,
     pub(crate) keybinds: Vec<CfgKeybind>,
 }
 
 
 
-//i could have worked to make this config loader not cracking itself when something is wrong but rather skip it, more user friendly you know
-pub fn new(config_file: &str) -> Config {
-
-    let f = File::open(&config_file).expect("Failed opening file");
-    return  match from_reader(f) {
+//exit here don't feel being a valid use
+pub fn new(file: File) -> Config {
+    return  match serde_json::from_reader(file) {
         Ok(x) => x,
         Err(e) => {
-            println!("Failed to load config: {}", e);
-            std::process::exit(1);
+            eprintln!("Failed to load config: {}", e);
+            std::process::exit(2);
         }
     };
 }

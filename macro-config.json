@@ -1,0 +1,29 @@
+{
+  "general_parameters": {
+    "event_path": "/dev/input/event3"
+  },
+  "keybinds": [ 
+    {
+      "sub_keybinds": [
+        {
+          "key_code": 16,
+          "keybind_type": "simple",
+          "key_state": {
+            "key_value": 1
+          }
+        },
+        {
+          "key_code": 17,
+          "keybind_type": "simple",
+          "key_state": {
+            "key_value": 1
+          }
+        }
+      ],
+      "name": "a",
+      "timer_threshold": 700
+    }
+  ]
+}
+
+
