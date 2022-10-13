@@ -12,9 +12,9 @@ So if you do space + Return, you can do Return + space it will work too.
 - **Wide Linux operability:** Unlike pre-existing linux keybinders this one is based on the linux kernel and should work on any display server
 (hello wayland users). downside is it requires some privileges.
 
-- **More control over key patterns: ** the vagk project was created to allow original way to make global keybinds.
+- **More control over key patterns:** the vagk project was created to allow original way to make global keybinds.
 
-- **Output to stdout: **Matching keybindings will be printed to stdout.
+- **Output to stdout:** Matching keybindings will be printed to stdout.
 
 ### How to use it:
 
