@@ -4,6 +4,9 @@ mod manager;
 mod main_loop;
 mod extractor;
 mod input_event;
+mod ordered_manager;
+mod keybind_tracker;
+mod listen_and_convert;
 
 extern crate clap;
 extern crate core;

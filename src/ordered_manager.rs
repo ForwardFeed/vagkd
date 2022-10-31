@@ -1,17 +1,18 @@
-use std::time::{Duration};
-use crate::config_loader::{CfgKeybind};
+/*
+use std::time::Duration;
+use crate::config_loader::CfgKeybind;
 use crate::{input_event, key_matching};
 use crate::keybind_tracker::KeybindTrackers;
 
 
-pub struct Manager{
+pub struct OrderedManager{
     keybind_team: Vec<KeybindTrackers>,
     cfg_threshold: u64,
     pub name: String,
 }
 
-impl Manager {
-    pub fn new(config: CfgKeybind) -> Manager{
+impl OrderedManager {
+    pub fn new(config: CfgKeybind) -> OrderedManager{
         let mut keybind_team: Vec<KeybindTrackers> = vec![];
         let cfg_threshold = config.timer_threshold;
 
@@ -20,7 +21,7 @@ impl Manager {
                 KeybindTrackers::new(key_matching::new(config.key_code, config.key_state))
             );
         });
-        Manager{
+        OrderedManager{
             keybind_team,
             cfg_threshold,
             name: config.name,
@@ -65,3 +66,4 @@ impl Manager {
     }
 
 }
+*/
