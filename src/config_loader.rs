@@ -6,15 +6,17 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct GeneralParameters {
     pub(crate)event_path: String,
+    pub(crate)void_period: u64, //milliseconds
 }
 
 
 #[derive(Deserialize, Debug, Clone,Serialize)]
 #[serde(untagged)]
-pub enum KeyStates{//Was really fun to do it but was it the simplest?
+pub enum KeyStates{
 SpamPress{spam_press_time_span: u64, repetition:u16 },
     LongPress{press_duration: u64},
     Simple{key_value: i32},
+    RecordKey{record: Vec<Vec<u32>>, sensibility: u32},
 }
 
 //this struct is just for the simple keycode and keystate, the keystate is comparable to a keyfunction
@@ -25,7 +27,7 @@ pub struct CfgSubKeybind {
     pub(crate) key_state: KeyStates,
 }
 
-// this will be a collection of couple keycode and keystate
+// this will be a collection of subkeybinds that must be triggered withing a time span of <timer_threshold>
 #[derive(Clone, Debug, Deserialize,Serialize)]
 pub struct CfgKeybind {
     pub(crate) sub_keybinds: Vec<CfgSubKeybind>,//

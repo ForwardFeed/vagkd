@@ -1,29 +1,76 @@
 {
   "general_parameters": {
-    "event_path": "/dev/input/event3"
+    "event_path": "/dev/input/event3",
+    "void_period": 100
   },
-  "keybinds": [ 
+  "keybinds": [
     {
+      "name": "spam_click",
+      "timer_threshold": 750,
       "sub_keybinds": [
         {
-          "key_code": 16,
-          "keybind_type": "simple",
+          "key_code": 82,
           "key_state": {
-            "key_value": 1
-          }
+            "press_duration": 300
+          },
+          "keybind_type": "longpress"
         },
         {
-          "key_code": 17,
-          "keybind_type": "simple",
+          "key_code": 71,
           "key_state": {
             "key_value": 1
-          }
+          },
+          "keybind_type": "simple"
         }
-      ],
-      "name": "a",
-      "timer_threshold": 700
+      ]
+    },
+    {
+      "name": "long click",
+      "timer_threshold": 750,
+      "sub_keybinds": [
+        {
+          "key_code": 82,
+          "key_state": {
+            "press_duration": 300
+          },
+          "keybind_type": "longpress"
+        },
+        {
+          "key_code": 73,
+          "key_state": {
+            "key_value": 1
+          },
+          "keybind_type": "simple"
+        }
+      ]
+    },
+    {
+      "name": "auto_walk",
+      "timer_threshold": 700,
+      "sub_keybinds": [
+        {
+          "key_code": 17,
+          "key_state": {
+            "spam_press_time_span": 700,
+            "repetition": 3
+          },
+          "keybind_type": "spampress"
+        }
+      ]
+    },
+    {
+      "name": "test_record",
+      "timer_threshold": 700,
+      "sub_keybinds": [
+        {
+          "key_code": 0,
+          "key_state": {
+            "record": [[0,0],[16,1]],
+            "sensibility": 15
+          },
+          "keybind_type": "record"
+        }
+      ]
     }
   ]
 }
-
-

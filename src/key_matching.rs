@@ -166,8 +166,35 @@ impl KeyMatching for SpamPress {
         return false
     }
 }
+/*
+    This structure will listen to the keys and if it sensibly matches the original keystroking
+    behavior it will trigger.
+*/
+struct RecordKey{
+    record: Vec<Vec<u32>>,
+    sensibility: u32,
+    variation: i32,
+    iterator: u32,
+}
 
+impl RecordKey{
+    pub fn new(record: Vec<Vec<u32>>, sensibility: u32) -> RecordKey {
+        RecordKey{
+            record,
+            sensibility,
+            variation: 0,
+            iterator: 0
+        }
 
+    }
+}
+
+impl KeyMatching for RecordKey{
+    fn key_matching(&mut self, last_event: InputEvent) -> bool {
+        println!("{:?}",self.record[1]);
+        return false
+    }
+}
 /*
   
  */
@@ -177,6 +204,7 @@ pub fn new(cfg_key_code: u16, cfg_key_state: KeyStates) -> Box<dyn KeyMatching>{
         KeyStates::Simple{key_value} => Box::new(Simple::new(cfg_key_code, key_value)),
         KeyStates::LongPress{press_duration} => Box::new(LongPress::new(cfg_key_code, press_duration)),
         KeyStates::SpamPress{spam_press_time_span, repetition} => Box::new(SpamPress::new(cfg_key_code,spam_press_time_span ,repetition)),
+        KeyStates::RecordKey{record, sensibility} => Box::new(RecordKey::new(record, sensibility)),
     }
 
 }

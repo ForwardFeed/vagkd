@@ -46,12 +46,12 @@ impl KeyboardEventReader {
 pub struct Extractor{
     _ev_thread_handle: thread::JoinHandle<()>,
     receiver: Receiver<InputEvent>,
-
+    void_period: u64,
 }
 
 impl Extractor {
 
-    pub fn new(event_file: String) -> Extractor {
+    pub fn new(event_file: String, void_period: u64) -> Extractor {
         let file = open_event_file(event_file);
         let (sender, receiver) = channel();
         let mut event_reader = KeyboardEventReader {
@@ -63,7 +63,8 @@ impl Extractor {
         });
         Extractor {
             _ev_thread_handle: ev_thread_handle,
-            receiver
+            receiver,
+            void_period
         }
     }
 
@@ -72,7 +73,7 @@ impl Extractor {
         // incoming or some non-necessary stuff to the program
         loop {
             loop {
-                match self.receiver.recv_timeout(Duration::from_millis(100)) {
+                match self.receiver.recv_timeout(Duration::from_millis(self.void_period)) {
                     Ok(last_event) => {
                         return last_event
                     },
