@@ -65,7 +65,7 @@
         {
           "key_code": 0,
           "key_state": {
-            "record": [[0,0],[16,1]],
+            "record": [[0,0,0],[16,1,0],[0,0,3],[16,0,0]],
             "sensibility": 15
           },
           "keybind_type": "record"

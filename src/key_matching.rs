@@ -173,8 +173,9 @@ impl KeyMatching for SpamPress {
 struct RecordKey{
     record: Vec<Vec<u32>>,
     sensibility: u32,
-    variation: i32,
-    iterator: u32,
+    variation: u32,
+    iterator: usize,
+    white_space: u32,
 }
 
 impl RecordKey{
@@ -183,15 +184,45 @@ impl RecordKey{
             record,
             sensibility,
             variation: 0,
-            iterator: 0
+            iterator: 0,
+            white_space: 0,
         }
-
     }
 }
 
 impl KeyMatching for RecordKey{
     fn key_matching(&mut self, last_event: InputEvent) -> bool {
-        println!("{:?}",self.record[1]);
+        let to_match= &self.record[self.iterator];
+        if to_match[0]==(last_event.key_code as u32) && to_match[1]==(last_event.key_value as u32){
+            return if self.white_space == 0 {
+                if to_match.len() <= self.iterator {
+                    self.iterator = 0;
+                    self.variation = 0;
+                    true
+                } else {
+                    self.iterator += 1;
+                    self.white_space = self.record[self.iterator][2];
+                    false
+                }
+            } else {
+                if self.white_space > 0{
+                    self.white_space -= 1;
+                }else{
+                    self.variation+=1;
+                    if self.variation > self.sensibility{
+                        self.iterator =0;
+                        self.variation=0;
+                    }
+                }
+                false
+            }
+        }else {
+            self.variation+=1;
+            if self.variation > self.sensibility{
+                self.iterator =0;
+                self.variation=0;
+            }
+        }
         return false
     }
 }
