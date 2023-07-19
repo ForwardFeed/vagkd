@@ -1,5 +1,5 @@
 # vagkd
-Very Advanced Global Keybind Daemon (for Linux)
+Vagely Advanced Global Keybind Daemon (for Linux)
 
 ### What is this?
 This is a keybind daemon for linux. It reacts from keys pressed on the keyboard, **globally**, on **any** Display server(X11/Wayland) and in a **more advanced/original** way.
